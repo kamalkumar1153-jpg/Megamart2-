@@ -15,7 +15,7 @@
 <body>
 
 <div class="flash-banner">
-    <span>⚡ MEGA FLASH SALE LIVE! UP TO 70% OFF</span>
+    <span>⚡ MEGA FLASH SALE LIVE! UP TO 30% OFF</span>
     <span class="flash-timer" id="flashTimer">05:45:12</span>
 </div>
 
@@ -29,7 +29,6 @@
 
     <div class="nav-right">
         <a href="tel:9024686665" class="inquiry-number">📞 9024686665</a>
-        <button class="admin-badge-btn" onclick="openAdminPanel()">👑 Admin Panel</button>
         <button class="cart-btn" onclick="toggleCart()">
             🛒 Cart <span class="cart-badge" id="cartCount">0</span>
         </button>
@@ -130,19 +129,10 @@
     </div>
 </div>
 
-<!-- Admin Dashboard Modal -->
-<div class="admin-modal" id="adminModal">
-    <div class="admin-content">
-        <span class="close-modal" onclick="closeAdminPanel()">&times;</span>
-        <h2>👑 Enterprise Admin Panel</h2>
-        <p>Live Orders Received from Firebase Database:</p>
-        <div id="adminOrdersList">Loading orders...</div>
-    </div>
-</div>
-
 <div id="toast">Notification</div>
 
 <!-- External JavaScript -->
 <script src="script.js"></script>
 </body>
 </html>
+
