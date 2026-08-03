@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaMart Enterprise - Next-Gen Shopping Platform</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <!-- jsPDF for Invoice -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="flash-banner">
+    <span>⚡ MEGA FLASH SALE LIVE! UP TO 70% OFF</span>
+    <span class="flash-timer" id="flashTimer">05:45:12</span>
+</div>
+
+<div class="navbar">
+    <a href="#" class="brand">Mega<span>Mart</span> Enterprise</a>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search products..." oninput="handleSearch()">
+        <button class="voice-btn" onclick="startVoiceSearch()" title="Voice Search">🎤</button>
+    </div>
+
+    <div class="nav-right">
+        <a href="tel:9024686665" class="inquiry-number">📞 9024686665</a>
+        <button class="admin-badge-btn" onclick="openAdminPanel()">👑 Admin Panel</button>
+        <button class="cart-btn" onclick="toggleCart()">
+            🛒 Cart <span class="cart-badge" id="cartCount">0</span>
+        </button>
+    </div>
+</div>
+
+<div class="categories-bar">
+    <div class="cat-tab active" onclick="filterCategory('All', this)">All Deals</div>
+    <div class="cat-tab" onclick="filterCategory('Wishlist', this)">❤️ Wishlist</div>
+    <div class="cat-tab" onclick="filterCategory('Salon & Beauty', this)">💈 Salon & Beauty</div>
+    <div class="cat-tab" onclick="filterCategory('Mobiles', this)">📱 Mobiles</div>
+    <div class="cat-tab" onclick="filterCategory('Electronics', this)">💻 Electronics</div>
+    <div class="cat-tab" onclick="filterCategory('Fashion', this)">👕 Fashion</div>
+    <div class="cat-tab" onclick="filterCategory('Home & Kitchen', this)">🏠 Home & Kitchen</div>
+    <div class="cat-tab" onclick="filterCategory('Appliances', this)">🔌 Appliances</div>
+    <div class="cat-tab" onclick="filterCategory('Grocery', this)">🛒 Grocery</div>
+</div>
+
+<div class="filter-controls">
+    <label>Max Price: ₹<span id="priceVal">50000</span></label>
+    <input type="range" id="priceRange" min="100" max="50000" step="500" value="50000" oninput="handlePriceFilter(this.value)">
+
+    <select class="sort-select" onchange="handleSort(this.value)">
+        <option value="default">Sort By: Featured</option>
+        <option value="low-high">Price: Low to High</option>
+        <option value="high-low">Price: High to Low</option>
+        <option value="discount">Highest Discount</option>
+    </select>
+</div>
+
+<div class="main-container">
+    <div class="products-grid" id="showroomGrid">Loading...</div>
+
+    <div class="cart-section" id="cartSection">
+        <h2>Your Enterprise Shopping Cart</h2>
+        <div id="cartItemsList">Cart is empty</div>
+
+        <div class="coupon-box" id="couponBox" style="display:none;">
+            <input type="text" id="couponCode" class="coupon-input" placeholder="Try Coupon: SAVE10">
+            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+
+        <div class="order-summary" id="orderSummary" style="display:none;">
+            <div class="summary-row"><span>Items Total:</span> <span id="summarySubtotal">₹0</span></div>
+            <div class="summary-row"><span>Coupon Discount:</span> <span style="color:green; font-weight:bold;" id="couponDiscount">-₹0</span></div>
+            <div class="summary-row"><span>Delivery:</span> <span style="color:green; font-weight:bold;">FREE</span></div>
+            <div class="summary-row"><span>Estimated Delivery:</span> <span style="font-weight:bold;" id="estDeliveryDate">---</span></div>
+            <hr>
+            <div class="summary-row" style="font-size:16px; font-weight:bold;"><span>Final Total:</span> <span>₹<span id="cartTotal">0</span></span></div>
+        </div>
+
+        <div class="address-box" id="addressBox" style="display:none;">
+            <h3>Check Pincode & Delivery Details</h3>
+            <div class="pincode-check">
+                <input type="text" id="checkPincode" class="address-input" placeholder="Enter 6-digit Pincode" maxlength="6" style="margin-bottom:0;">
+                <button class="coupon-btn" onclick="verifyPincode()">Check</button>
+            </div>
+            <div class="pincode-result" id="pincodeResult"></div>
+
+            <input type="text" id="custName" class="address-input" placeholder="Full Name">
+            <input type="text" id="custPhone" class="address-input" placeholder="Mobile Number" value="9024686665">
+            <textarea id="custAddress" class="address-input" placeholder="House No, Street, Landmark, City, Pincode" rows="3"></textarea>
+            
+            <h4>Select Payment Mode:</h4>
+            <div class="payment-options">
+                <label><input type="radio" name="payMode" value="UPI" checked> Online UPI Payment</label>
+                <label><input type="radio" name="payMode" value="COD"> Cash on Delivery (COD)</label>
+            </div>
+        </div>
+
+        <div class="btn-group" id="checkoutBtns" style="display:none;">
+            <button class="pay-link" onclick="proceedToPayment()">Place Order Now</button>
+            <button class="wa-link" onclick="proceedToWhatsApp()">Order on WhatsApp 💬</button>
+        </div>
+
+        <button class="pdf-btn" id="pdfBtn" onclick="generateInvoicePDF()">📥 Download Tax Invoice (PDF)</button>
+        
+        <div class="inquiry-footer">
+            Any question about order? Call us at <a href="tel:9024686665">9024686665</a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Detail & Review Modal -->
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img id="modalImg" class="modal-img">
+        <h3 id="modalTitle">Product Title</h3>
+        <p style="color: var(--price-red); font-size: 20px; font-weight: bold;" id="modalPrice">₹0</p>
+        <div style="font-size:13px; text-align:left; margin: 10px 0; background:#f9f9f9; padding:8px; border-radius:4px;" id="modalReviewsBox">
+            <b>Customer Reviews:</b>
+            <div id="reviewsList" style="max-height: 80px; overflow-y:auto; margin-top:5px;">No reviews yet.</div>
+        </div>
+        <input type="text" id="userReviewInput" class="address-input" placeholder="Write a review..." style="margin-bottom:5px; font-size:12px;">
+        <button class="coupon-btn" style="width:100%; margin-bottom:10px;" onclick="submitReview()">Post Review</button>
+        <button class="action-btn" id="modalAddBtn">Add to Cart</button>
+    </div>
+</div>
+
+<!-- Admin Dashboard Modal -->
+<div class="admin-modal" id="adminModal">
+    <div class="admin-content">
+        <span class="close-modal" onclick="closeAdminPanel()">&times;</span>
+        <h2>👑 Enterprise Admin Panel</h2>
+        <p>Live Orders Received from Firebase Database:</p>
+        <div id="adminOrdersList">Loading orders...</div>
+    </div>
+</div>
+
+<div id="toast">Notification</div>
+
+<!-- External JavaScript -->
+<script src="script.js"></script>
+</body>
+</html>
