@@ -1,3 +1,20 @@
+:root {
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-color: #334155;
+  --border-color: #e2e8f0;
+  --header-bg: #0284c7;
+  --accent-color: #e11d48;
+}
+
+body.dark-mode {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --text-color: #f1f5f9;
+  --border-color: #334155;
+  --header-bg: #0369a1;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,14 +23,15 @@
 }
 
 body {
-  background-color: #f8fafc;
-  color: #334155;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   padding-bottom: 40px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Header */
 .header {
-  background-color: #0284c7;
+  background-color: var(--header-bg);
   color: white;
   padding: 12px 16px;
   display: flex;
@@ -26,11 +44,37 @@ body {
   font-weight: bold;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--accent-color);
+  color: white;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
 .cart-btn {
   background: white;
   color: #0284c7;
   border: none;
-  padding: 6px 14px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: bold;
@@ -41,14 +85,14 @@ body {
 }
 
 .cart-count {
-  background: #e11d48;
+  background: var(--accent-color);
   color: white;
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 10px;
 }
 
-/* Offer Bar */
+/* Offer Bar & Banner Slider */
 .offer-bar {
   background: #ef4444;
   color: white;
@@ -58,9 +102,21 @@ body {
   font-weight: 600;
 }
 
+.banner-slider {
+  background: #3b82f6;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.slide { display: none; }
+.slide.active { display: block; }
+
 /* Search */
 .search-container {
-  background: #0284c7;
+  background: var(--header-bg);
   padding: 10px 16px;
 }
 
@@ -102,17 +158,17 @@ body {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
   overflow-x: auto;
 }
 
 .filter-btn {
   padding: 6px 14px;
   border-radius: 20px;
-  border: 1px solid #cbd5e1;
-  background: white;
-  color: #475569;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
   font-size: 12px;
   white-space: nowrap;
   cursor: pointer;
@@ -133,16 +189,14 @@ body {
 }
 
 @media (min-width: 768px) {
-  .product-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .product-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 .product-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 10px;
   padding: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -161,6 +215,19 @@ body {
   border-radius: 4px;
 }
 
+.wishlist-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.wishlist-btn.active { color: #ef4444; }
+
 .prod-img {
   width: 100%;
   height: 120px;
@@ -171,7 +238,6 @@ body {
 .prod-title {
   font-size: 12px;
   font-weight: 600;
-  color: #1e293b;
   margin-bottom: 4px;
   height: 32px;
   overflow: hidden;
@@ -191,7 +257,7 @@ body {
 }
 
 .final-price {
-  color: #e11d48;
+  color: var(--accent-color);
   font-weight: bold;
   font-size: 13px;
 }
@@ -214,7 +280,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
   z-index: 100;
   align-items: center;
   justify-content: center;
@@ -222,12 +288,17 @@ body {
 }
 
 .modal-content {
-  background: white;
+  background: var(--card-bg);
+  color: var(--text-color);
   border-radius: 12px;
   width: 100%;
   max-width: 360px;
   padding: 16px;
   position: relative;
+}
+
+.bill-modal-content {
+  max-width: 400px;
 }
 
 .close-btn {
@@ -240,6 +311,26 @@ body {
   color: #94a3b8;
   cursor: pointer;
 }
+
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-prev, .carousel-next {
+  position: absolute;
+  background: rgba(0,0,0,0.3);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.carousel-prev { left: 0; }
+.carousel-next { right: 0; }
 
 .modal-img {
   width: 100%;
@@ -255,7 +346,7 @@ body {
 }
 
 .modal-price {
-  color: #e11d48;
+  color: var(--accent-color);
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 12px;
@@ -294,18 +385,48 @@ body {
   gap: 4px;
 }
 
-/* Cart Specifics */
+/* Cart & Pincode Box */
+.pincode-box {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.form-input-sm {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.btn-sm {
+  background: #0284c7;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.delivery-info {
+  font-size: 11px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 8px;
   margin-bottom: 10px;
 }
 
 .cart-list {
-  max-height: 200px;
+  max-height: 180px;
   overflow-y: auto;
   margin-bottom: 10px;
 }
@@ -315,38 +436,120 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-color);
   font-size: 12px;
 }
 
 .form-input {
   width: 100%;
   padding: 8px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 12px;
   margin-bottom: 8px;
   outline: none;
+  background: var(--card-bg);
+  color: var(--text-color);
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
-  margin-bottom: 10px;
-  font-size: 14px;
+  margin-bottom: 4px;
+  font-size: 12px;
 }
 
-.total-price {
-  color: #e11d48;
+.grand-total {
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 6px;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 6px;
 }
+
+.total-price { color: var(--accent-color); }
 
 .btn-order {
   width: 100%;
-  background: #10b981;
+  background: #0284c7;
   color: white;
   border: none;
   padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* Bill Invoice Styling */
+.invoice-box {
+  background: #ffffff;
+  color: #0f172a;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+}
+
+.invoice-header { text-align: center; }
+.invoice-header h2 { font-size: 16px; color: #0284c7; }
+.bill-hr { margin: 8px 0; border: none; border-top: 1px dashed #cbd5e1; }
+
+.invoice-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.inv-addr { font-size: 11px; margin-bottom: 10px; }
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.invoice-table th, .invoice-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 4px 2px;
+  font-size: 11px;
+  text-align: left;
+}
+
+.invoice-totals {
+  text-align: right;
+  font-size: 11px;
+}
+
+.inv-grand {
+  font-weight: bold;
+  font-size: 13px;
+  color: #e11d48;
+  margin-top: 4px;
+}
+
+.invoice-footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 6px;
+}
+
+.bill-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-download {
+  flex: 1;
+  background: #0284c7;
+  color: white;
+  border: none;
+  padding: 8px;
   border-radius: 6px;
   font-weight: bold;
   font-size: 12px;
@@ -374,4 +577,5 @@ body {
   font-size: 12px;
   z-index: 200;
 }
+
 
