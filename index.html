@@ -14,21 +14,40 @@
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- html2pdf Library for Generating PDF Bills -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
   <!-- Header Banner -->
   <header class="header">
     <h1 class="logo">Megamart</h1>
-    <button onclick="openCartModal()" class="cart-btn">
-      <i class="fa-solid fa-cart-shopping"></i> Cart
-      <span id="cartCount" class="cart-count">0</span>
-    </button>
+    <div class="header-actions">
+      <button onclick="toggleDarkMode()" class="icon-btn" title="Toggle Dark/Light Mode">
+        <i id="themeIcon" class="fa-solid fa-moon"></i>
+      </button>
+      <button onclick="openWishlistModal()" class="icon-btn" title="Wishlist">
+        <i class="fa-solid fa-heart"></i>
+        <span id="wishlistCount" class="badge">0</span>
+      </button>
+      <button onclick="openCartModal()" class="cart-btn">
+        <i class="fa-solid fa-cart-shopping"></i> Cart
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
+    </div>
   </header>
 
   <!-- Offer Bar -->
   <div class="offer-bar">
-    30% OFF Special Mega Store Discount
+    🔥 Special Sale - Up to 30% OFF on All Categories!
+  </div>
+
+  <!-- Promotional Banner Slider -->
+  <div class="banner-slider">
+    <div class="slide active">🎉 Mega Sale! Best Prices Guaranteed</div>
+    <div class="slide">💈 Saloon & Beauty Products Special Discount!</div>
+    <div class="slide">🚚 Express Delivery Available in Select Areas</div>
   </div>
 
   <!-- Search Section -->
@@ -43,6 +62,7 @@
   <!-- Category Filters -->
   <div class="category-bar">
     <button class="filter-btn active" onclick="filterCategory('all', this)">All</button>
+    <button class="filter-btn" onclick="filterCategory('saloon', this)">Saloon & Beauty</button>
     <button class="filter-btn" onclick="filterCategory('grocery', this)">Grocery</button>
     <button class="filter-btn" onclick="filterCategory('electronics', this)">Electronics</button>
     <button class="filter-btn" onclick="filterCategory('fashion', this)">Fashion</button>
@@ -55,11 +75,17 @@
     </div>
   </main>
 
-  <!-- Product Modal -->
+  <!-- Product Details Modal with Image Slider -->
   <div id="prodModal" class="modal">
     <div class="modal-content">
       <button onclick="closeModal('prodModal')" class="close-btn">&times;</button>
-      <img id="m-img" src="" class="modal-img">
+      
+      <div class="carousel-container">
+        <img id="m-img" src="" class="modal-img">
+        <button class="carousel-prev" onclick="prevModalImage()">&#10094;</button>
+        <button class="carousel-next" onclick="nextModalImage()">&#10095;</button>
+      </div>
+
       <h3 id="m-title" class="modal-title"></h3>
       <div id="m-price" class="modal-price"></div>
       
@@ -72,7 +98,7 @@
     </div>
   </div>
 
-  <!-- Cart Modal -->
+  <!-- Cart Modal with Delivery / Pincode Calculator -->
   <div id="cartModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -83,16 +109,108 @@
       <div id="cartList" class="cart-list"></div>
 
       <div id="checkoutSection" class="checkout-section">
+        <!-- Pincode Check -->
+        <div class="pincode-box">
+          <input type="number" id="pincodeInput" placeholder="Enter 6-Digit Pincode" class="form-input-sm">
+          <button onclick="checkPincode()" class="btn-sm">Check Delivery</button>
+        </div>
+        <p id="deliveryInfo" class="delivery-info"></p>
+
         <div class="total-row">
-          <span>Total:</span>
+          <span>Subtotal:</span>
+          <span>₹<span id="cartSubtotal">0</span></span>
+        </div>
+        <div class="total-row">
+          <span>Delivery Charge:</span>
+          <span>₹<span id="deliveryCharge">0</span></span>
+        </div>
+        <div class="total-row grand-total">
+          <span>Grand Total:</span>
           <span class="total-price">₹<span id="cartTotal">0</span></span>
         </div>
 
         <input type="text" id="custName" placeholder="Apna Naam bharein" class="form-input">
         <input type="tel" id="custPhone" placeholder="Mobile Number bharein" class="form-input">
+        <textarea id="custAddress" placeholder="Poora Pata (Address) bharein" class="form-input" rows="2"></textarea>
 
-        <button onclick="sendWhatsAppOrder()" class="btn-order">
-          <i class="fa-brands fa-whatsapp"></i> WhatsApp Par Order Karein
+        <button onclick="processOrderAndBill()" class="btn-order">
+          <i class="fa-solid fa-file-invoice"></i> Order Karein & Bill Generate Karein
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Modal -->
+  <div id="wishlistModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Your Wishlist (❤️)</h3>
+        <button onclick="closeModal('wishlistModal')" class="close-btn">&times;</button>
+      </div>
+      <div id="wishlistContainer" class="cart-list"></div>
+    </div>
+  </div>
+
+  <!-- Bill Preview Modal -->
+  <div id="billModal" class="modal">
+    <div class="modal-content bill-modal-content">
+      <div class="modal-header">
+        <h3>Order Invoice</h3>
+        <button onclick="closeModal('billModal')" class="close-btn">&times;</button>
+      </div>
+
+      <!-- Printable Bill Area -->
+      <div id="invoiceArea" class="invoice-box">
+        <div class="invoice-header">
+          <h2>MEGAMART STORE</h2>
+          <p>Official Order Receipt</p>
+          <hr class="bill-hr">
+        </div>
+
+        <div class="invoice-meta">
+          <div>
+            <p><strong>Order ID:</strong> <span id="invOrderId">#MM1001</span></p>
+            <p><strong>Date:</strong> <span id="invDate">14/08/2026</span></p>
+          </div>
+          <div style="text-align: right;">
+            <p><strong>Customer:</strong> <span id="invName">Name</span></p>
+            <p><strong>Phone:</strong> <span id="invPhone">9876543210</span></p>
+          </div>
+        </div>
+
+        <p class="inv-addr"><strong>Address:</strong> <span id="invAddress">Address, Pincode</span></p>
+
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="invItems"></tbody>
+        </table>
+
+        <div class="invoice-totals">
+          <p>Subtotal: <span>₹<span id="invSubtotal">0</span></span></p>
+          <p>Delivery Fee: <span>₹<span id="invDelivery">0</span></span></p>
+          <p class="inv-grand">Grand Total: <span>₹<span id="invTotal">0</span></span></p>
+        </div>
+
+        <div class="invoice-footer">
+          <p>Thank you for shopping with Megamart!</p>
+          <p style="font-size: 10px; color: #64748b;">For any query, contact Support.</p>
+        </div>
+      </div>
+
+      <!-- Bill Actions -->
+      <div class="bill-actions">
+        <button onclick="downloadPDF()" class="btn-download">
+          <i class="fa-solid fa-download"></i> Download PDF Bill
+        </button>
+        <button onclick="shareWhatsAppBill()" class="btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> Confirm via WhatsApp
         </button>
       </div>
     </div>
@@ -105,6 +223,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
