@@ -18,8 +18,12 @@
 
     .banner { background: #1e293b; color: #f8fafc; text-align: center; padding: 8px; font-size: 11px; font-weight: 500; }
     .container { max-width: 800px; margin: 0 auto; padding: 12px; }
-    .section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px; }
     
+    /* Category Header & Filter Style */
+    .filter-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; }
+    .section-title { font-size: 16px; font-weight: bold; color: #0f172a; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .cat-select { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; background: white; color: #0f172a; font-weight: bold; cursor: pointer; }
+
     .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     @media(min-width: 600px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
 
@@ -31,7 +35,6 @@
     .mrp-price { font-size: 11px; color: #94a3b8; text-decoration: line-through; }
     .disc-tag { font-size: 9px; background: #fef3c7; color: #b45309; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
     .btn-add-cart { background: #0284c7; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; width: 100%; transition: 0.2s; }
-    .btn-add-cart:active { transform: scale(0.97); }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
     .modal-overlay.hidden { display: none; }
@@ -47,10 +50,9 @@
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 11px; font-weight: bold; color: #475569; margin-bottom: 4px; }
     .form-input { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; }
-    .form-input:focus { border-color: #0284c7; }
 
     .pay-options { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
-    .pay-card { border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+    .pay-card { border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
     .pay-card.active { border-color: #0284c7; background: #f0f9ff; }
     .pay-info { display: flex; align-items: center; gap: 10px; }
     .pay-icon { font-size: 18px; color: #0284c7; width: 24px; text-align: center; }
@@ -58,11 +60,11 @@
     .pay-desc { font-size: 10px; color: #64748b; }
 
     .qr-box { background: #f8fafc; border: 1px dashed #0284c7; border-radius: 10px; padding: 12px; text-align: center; margin-top: 10px; }
-    .qr-img { width: 150px; height: 150px; margin: 8px auto; border: 2px solid white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .qr-img { width: 160px; height: 160px; margin: 8px auto; border: 2px solid white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .upi-id-txt { font-size: 11px; font-weight: bold; color: #0284c7; margin-top: 4px; background: #e0f2fe; padding: 4px 8px; border-radius: 6px; display: inline-block; }
 
     .btn-checkout { background: #0284c7; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 10px; }
-    .btn-checkout:disabled { background: #94a3b8; }
-
+    
     .inv-header { border-bottom: 2px dashed #0284c7; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; }
     .inv-details { line-height: 1.6; font-size: 11px; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 8px; }
     .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; }
@@ -84,20 +86,28 @@
     </button>
   </div>
 
-  <div class="banner">🔥 Special Sale - Fast Delivery & Easy Payment Options!</div>
+  <div class="banner">🔥 Special Sale - Up to 30% OFF on All Categories!</div>
 
   <div class="container">
-    <div class="section-title"><i class="fa-solid fa-fire" style="color:#f59e0b;"></i> Available Products</div>
+    <!-- Category Filter Bar -->
+    <div class="filter-bar">
+      <div class="section-title"><i class="fa-solid fa-layer-group" style="color:#0284c7;"></i> Products</div>
+      <select id="categoryFilter" class="cat-select" onchange="filterProducts()">
+        <option value="All">All Categories</option>
+      </select>
+    </div>
+
+    <!-- Product Grid -->
     <div class="product-grid" id="productGrid">
       <div style="grid-column: span 2; text-align: center; padding: 30px; color: #94a3b8;">Loading products...</div>
     </div>
   </div>
 
-  <!-- CART MODAL -->
+  <!-- CART & CHECKOUT MODAL -->
   <div id="cartModal" class="modal-overlay hidden">
     <div class="modal-box">
       <div class="modal-head">
-        <h3><i class="fa-solid fa-basket-shopping"></i> Your Shopping Cart</h3>
+        <h3><i class="fa-solid fa-basket-shopping"></i> Shopping Cart</h3>
         <button onclick="closeCartModal()" class="modal-close">&times;</button>
       </div>
 
@@ -124,11 +134,9 @@
           <input type="text" id="custAddress" placeholder="Ghar / Dukan Ka Pura Pata" required class="form-input">
         </div>
 
-        <!-- PAYMENT METHOD SELECTION -->
         <div class="form-group">
           <label>Select Payment Option *</label>
           <div class="pay-options">
-            
             <label class="pay-card active" id="labelCod" onclick="selectPayment('COD')">
               <div class="pay-info">
                 <i class="fa-solid fa-hand-holding-dollar pay-icon"></i>
@@ -150,14 +158,14 @@
               </div>
               <i class="fa-regular fa-circle" id="checkUpi" style="color:#cbd5e1;"></i>
             </label>
-
           </div>
         </div>
 
         <div id="qrSection" class="qr-box hidden">
           <p style="font-size: 11px; font-weight: bold; color: #0369a1;">📱 Scan & Pay via any UPI App</p>
           <img id="upiQrImage" src="" class="qr-img" alt="UPI QR Code">
-          <p style="font-size: 10px; color: #64748b;">Scan ke baad 'Place Order' button par click karein.</p>
+          <div><span class="upi-id-txt">UPI ID: 9024686665@ptyes</span></div>
+          <p style="font-size: 10px; color: #64748b; margin-top: 6px;">Scan ke baad 'Place Order Now' button par click karein.</p>
         </div>
 
         <button type="submit" id="placeOrderBtn" class="btn-checkout">
@@ -196,48 +204,83 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.database();
 
-    let productsList = [];
+    let allProducts = [];
     let cart = [];
     let selectedPayMode = 'Cash on Delivery';
-    const storeUpiId = "megamart@upi";
+    
+    // Updated Store UPI ID
+    const storeUpiId = "9024686665@ptyes";
 
+    // Realtime Products & Category Loading
     db.ref('products').on('value', (snapshot) => {
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-      productsList = [];
+      allProducts = [];
+      const categoriesSet = new Set();
 
       if (snapshot.exists()) {
         snapshot.forEach(child => {
           const p = child.val();
           p.id = child.key;
-          productsList.push(p);
-
-          const mrp = Number(p.mrp || p.price || 0);
-          const disc = Number(p.discount || 0);
-          const finalPrice = Math.round(mrp - (mrp * (disc / 100)));
-          const img = p.image || p.imageUrl || 'https://via.placeholder.com/150';
-
-          grid.innerHTML += `
-            <div class="prod-card">
-              <img src="${img}" class="prod-img">
-              <div>
-                <div class="prod-title">${p.name || p.title}</div>
-                <div class="price-row">
-                  <span class="curr-price">₹${finalPrice}</span>
-                  <span class="mrp-price">₹${mrp}</span>
-                  <span class="disc-tag">${disc}% OFF</span>
-                </div>
-              </div>
-              <button class="btn-add-cart" onclick="addToCart('${p.id}')">+ Add to Cart</button>
-            </div>`;
+          allProducts.push(p);
+          if (p.category) { categoriesSet.add(p.category); }
         });
-      } else {
-        grid.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 30px; color: #94a3b8;">Koi Product uplabdh nahi hai.</div>';
       }
+
+      // Populate Category Filter
+      const catSelect = document.getElementById('categoryFilter');
+      catSelect.innerHTML = '<option value="All">All Categories</option>';
+      categoriesSet.forEach(cat => {
+        catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+
+      renderProducts(allProducts);
     });
 
+    // Render Product Cards
+    function renderProducts(list) {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+
+      if (list.length === 0) {
+        grid.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 30px; color: #94a3b8;">Koi Product nahi milne par!</div>';
+        return;
+      }
+
+      list.forEach(p => {
+        const mrp = Number(p.mrp || p.price || 0);
+        const disc = Number(p.discount || 0);
+        const finalPrice = Math.round(mrp - (mrp * (disc / 100)));
+        const img = p.image || p.imageUrl || 'https://via.placeholder.com/150';
+
+        grid.innerHTML += `
+          <div class="prod-card">
+            <img src="${img}" class="prod-img">
+            <div>
+              <div class="prod-title">${p.name || p.title}</div>
+              <div class="price-row">
+                <span class="curr-price">₹${finalPrice}</span>
+                <span class="mrp-price">₹${mrp}</span>
+                <span class="disc-tag">${disc}% OFF</span>
+              </div>
+            </div>
+            <button class="btn-add-cart" onclick="addToCart('${p.id}')">+ Add to Cart</button>
+          </div>`;
+      });
+    }
+
+    // Category Filter Selection
+    function filterProducts() {
+      const selectedCat = document.getElementById('categoryFilter').value;
+      if (selectedCat === 'All') {
+        renderProducts(allProducts);
+      } else {
+        const filtered = allProducts.filter(p => p.category === selectedCat);
+        renderProducts(filtered);
+      }
+    }
+
+    // Cart Handlers
     function addToCart(prodId) {
-      const prod = productsList.find(p => p.id === prodId);
+      const prod = allProducts.find(p => p.id === prodId);
       if (!prod) return;
 
       const mrp = Number(prod.mrp || prod.price || 0);
@@ -325,6 +368,7 @@
     function closeCartModal() { document.getElementById('cartModal').classList.add('hidden'); }
     function closeInvoiceModal() { document.getElementById('invoiceModal').classList.add('hidden'); }
 
+    // Submit Order
     document.getElementById('orderForm').onsubmit = (e) => {
       e.preventDefault();
       if (cart.length === 0) { alert("Pehle cart me koi item add karein!"); return; }
@@ -427,6 +471,7 @@
   </script>
 </body>
 </html>
+
 
 
 
